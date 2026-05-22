@@ -3,19 +3,19 @@ import versionModel from '../models/version.model.js'
 import userModel from '../models/user.model.js'
 
 export const createNewDocument = async (req, res) => {
-    const {title} = req.body;
+    const { title, content } = req.body;
     const owner = req.user.id
 
-    try{
-        const newDocument = await documentModel.create({title, owner});
+    try {
+        const newDocument = await documentModel.create({ title, content, owner });
         res.status(201).json({
             success: true,
             message: 'Document created successfully',
             document: newDocument
-        });   
+        });
     }
 
-    catch(error){
+    catch(error) {
         console.error('Error creating document:', error);
         res.status(500).json({
             success: false,
@@ -103,7 +103,6 @@ export const updateDocument = async (req, res) => {
     try {
         const document = await documentModel.findById(id)
 
-        // Check if document exists
         if(!document) {
             return res.status(404).json({
                 success: false,
@@ -111,7 +110,6 @@ export const updateDocument = async (req, res) => {
             })
         }
 
-        // Check if user has edit access
         const isOwner = document.owner.toString() === userId
         const isEditor = document.collaborators.some(
             c => c.user.toString() === userId && c.role === 'editor'
@@ -124,7 +122,18 @@ export const updateDocument = async (req, res) => {
             })
         }
 
-        // Update document
+        // version save 
+        const latestVersion = await versionModel.findOne({ documentId: id })
+            .sort({ versionNumber: -1 })
+
+        await versionModel.create({
+            documentId: id,
+            content: document.content,
+            savedBy: userId,
+            versionNumber: (latestVersion?.versionNumber || 0) + 1
+        })
+    
+
         if(title) document.title = title
         if(content) document.content = content
 
@@ -144,7 +153,6 @@ export const updateDocument = async (req, res) => {
         });
     }
 }
-
 
 export const deleteDocument = async (req, res) => {
     const { id } = req.params;

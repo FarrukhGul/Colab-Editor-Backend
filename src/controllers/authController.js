@@ -23,7 +23,7 @@ export const register = async(req, res) => {
         const hashPassword = await bcrypt.hash(password, salt);
 
         // Create user
-        await userModel.create({
+        const newUser = await userModel.create({
             name,
             email,
             password: hashPassword
@@ -32,7 +32,7 @@ export const register = async(req, res) => {
         return res.status(201).json({
             success: true,
             message: 'User created',
-            user: { name, email }
+            user: { _id: newUser._id, name, email }
         })
 
     } catch(err) {
@@ -43,7 +43,6 @@ export const register = async(req, res) => {
         })
     }
 }
-
 export const login = async(req, res) => {
     const { email, password } = req.body;
 
