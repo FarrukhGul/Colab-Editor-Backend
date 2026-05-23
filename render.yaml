@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: collab-editor-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: MONGO_URI
+        sync: false
+      - key: ACCESS_TOKEN_SECRET
+        sync: false
+      - key: ACCESS_TOKEN_EXPIRE
+        value: 15m
+      - key: REFRESH_TOKEN_SECRET
+        sync: false
+      - key: REFRESH_TOKEN_EXPIRE
+        value: 7d
+      - key: FRONTEND_URL
+        sync: false
