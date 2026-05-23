@@ -427,12 +427,15 @@ export const restoreVersion = async (req, res) => {
             })
         }
 
-        // Only owner can restore version
+        // Only owner or editor can restore version
         const isOwner = document.owner.toString() === userId
-        if(!isOwner) {
+        const isEditor = document.collaborators.some(
+            c => c.user.toString() === userId && c.role === 'editor'
+        )
+        if(!isOwner && !isEditor) {
             return res.status(403).json({
                 success: false,
-                message: 'Access denied — only owner can restore versions'
+                message: 'Access denied — edit permission required to restore versions'
             })
         }
 
