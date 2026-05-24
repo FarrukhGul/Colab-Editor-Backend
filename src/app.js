@@ -15,7 +15,7 @@ const app = express();
 // Middleware
 app.use(helmet());
 app.use(cors({
-    origin: env.FRONTEND_URL || 'http://localhost:5173',
+    origin: env.FRONTEND_URL || 'https://colab-editor-farrukh.vercel.app',
     credentials: true,
 }));
 app.use(express.json())
